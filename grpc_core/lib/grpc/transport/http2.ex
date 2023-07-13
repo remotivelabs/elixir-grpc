@@ -6,7 +6,11 @@ defmodule GRPC.Transport.HTTP2 do
   require Logger
 
   def server_headers(%{codec: GRPC.Codec.WebText = codec}) do
-    %{"content-type" => "application/grpc-web-#{codec_name(codec)}"}
+    %{
+      "content-type" => "application/grpc-web-#{codec_name(codec)}",
+      "access-control-allow-origin" => "*",
+      "access-control-allow-headers" => "content-type, x-grpc-web, x-user-agent, x-api-key"
+    }
   end
 
   # TO-DO: refactor when we add a GRPC.Codec.content_type callback
@@ -15,7 +19,11 @@ defmodule GRPC.Transport.HTTP2 do
   end
 
   def server_headers(%{codec: codec}) do
-    %{"content-type" => "application/grpc+#{codec_name(codec)}"}
+    %{
+      "content-type" => "application/grpc+#{codec_name(codec)}",
+      "access-control-allow-origin" => "*",
+      "access-control-allow-headers" => "content-type, x-grpc-web, x-user-agent, x-api-key"
+    }
   end
 
   @spec server_trailers(integer, String.t(), [Google.Protobuf.Any.t()] | nil) :: map
