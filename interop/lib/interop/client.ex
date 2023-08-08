@@ -252,8 +252,17 @@ defmodule Interop.Client do
 
   def cancel_after_begin!(ch) do
     Logger.info("Run cancel_after_begin!")
-    stream = Grpc.Testing.TestService.Stub.streaming_input_call(ch)
+
+    req = Grpc.Testing.StreamingOutputCallRequest.new(response_parameters: [
+      %{compressed: %{value: true},
+        size: 31415},
+      %{compressed: %{value: false},
+        size: 92653}
+    ])
+
+    stream = Grpc.Testing.TestService.Stub.streaming_output_call(ch, req)
     stream = GRPC.Stub.cancel(stream)
+    Logger.info("hello")
     error = GRPC.RPCError.exception(1, "The operation was cancelled")
     {:error, ^error} = GRPC.Stub.recv(stream)
   end
