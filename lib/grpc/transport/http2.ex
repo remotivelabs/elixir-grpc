@@ -12,7 +12,7 @@ defmodule GRPC.Transport.HTTP2 do
     %{
       "content-type" => "application/grpc-web-#{codec.name()}",
       "access-control-allow-origin" => "*",
-      "access-control-allow-headers" => "content-type, x-grpc-web, x-user-agent, x-api-key"
+      "access-control-allow-headers" => "content-type, x-grpc-web, x-user-agent, x-api-key, authorization"
     }
   end
 
@@ -20,7 +20,7 @@ defmodule GRPC.Transport.HTTP2 do
     %{
       "content-type" => "application/grpc+#{codec.name()}",
       "access-control-allow-origin" => "*",
-      "access-control-allow-headers" => "content-type, x-grpc-web, x-user-agent, x-api-key"
+      "access-control-allow-headers" => "content-type, x-grpc-web, x-user-agent, x-api-key, authorization"
     }
   end
 
