@@ -166,6 +166,11 @@ defmodule GRPC.Server do
           )
         end
 
+        # this handles preflight, relevant for COORS
+        def __call_rpc__(unquote(path), :options, stream) do
+          {:ok, stream}
+        end
+
         if http_transcode and Map.has_key?(options, :http) do
           %{value: http_rule} = GRPC.Service.rpc_options(rpc, :http)
           {http_method, http_path, _matches} = Router.build_route(http_rule)
