@@ -401,9 +401,7 @@ defmodule GRPC.Integration.ServerTest do
             :gun.get(
               conn_pid,
               "/v1/messages/#{code_name}",
-              [
-                {"accept", "application/json"}
-              ]
+              []
             )
 
           assert_receive {:gun_up, ^conn_pid, :http}
