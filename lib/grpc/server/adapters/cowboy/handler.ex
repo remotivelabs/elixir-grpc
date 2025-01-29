@@ -600,6 +600,7 @@ defmodule GRPC.Server.Adapters.Cowboy.Handler do
     end
   end
 
+  defp extract_subtype("*/*"), do: {:ok, "proto"}
   defp extract_subtype("application/json"), do: {:ok, "json"}
   defp extract_subtype("application/grpc"), do: {:ok, "proto"}
   defp extract_subtype("application/grpc+"), do: {:ok, "proto"}
