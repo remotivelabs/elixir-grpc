@@ -600,6 +600,7 @@ defmodule GRPC.Server.Adapters.Cowboy.Handler do
     end
   end
 
+  defp extract_subtype("*/*"), do: {:ok, "proto"}
   defp extract_subtype("application/json"), do: {:ok, "json"}
   defp extract_subtype("application/grpc"), do: {:ok, "proto"}
   defp extract_subtype("application/grpc+"), do: {:ok, "proto"}
@@ -619,7 +620,7 @@ defmodule GRPC.Server.Adapters.Cowboy.Handler do
     {:ok, "proto"}
   end
 
-  defp transcode?(%{version: "HTTP/1.1"}), do: true
+  defp transcode?(%{version: :"HTTP/1.1"}), do: true
 
   defp transcode?(req) do
     case find_content_type_subtype(req) do
