@@ -9,23 +9,24 @@ defmodule GRPC.Transport.HTTP2 do
   require Logger
 
   def server_headers(%{codec: GRPC.Codec.WebText = codec}) do
-    %{
-      "content-type" => "application/grpc-web-#{codec.name()}",
-      "access-control-allow-origin" => "*",
-      "access-control-allow-headers" => "content-type, x-grpc-web, x-user-agent, x-api-key, x-authorization"
-    }
+    server_headers_for_content_type("application/grpc-web-#{codec.name()}")
   end
 
   # TO-DO: refactor when we add a GRPC.Codec.content_type callback
   def server_headers(%{codec: GRPC.Codec.JSON}) do
-    %{"content-type" => "application/json"}
+    server_headers_for_content_type("application/json")
   end
 
   def server_headers(%{codec: codec}) do
+    server_headers_for_content_type("application/grpc+#{codec.name()}")
+  end
+
+  defp server_headers_for_content_type(content_type) do
     %{
-      "content-type" => "application/grpc+#{codec.name()}",
+      "content-type" => content_type,
       "access-control-allow-origin" => "*",
-      "access-control-allow-headers" => "content-type, x-grpc-web, x-user-agent, x-api-key, x-authorization"
+      "access-control-allow-headers" =>
+        "content-type, x-grpc-web, x-user-agent, x-api-key, x-authorization"
     }
   end
 
