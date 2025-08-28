@@ -202,6 +202,10 @@ defmodule GRPC.Server do
         end
       end)
 
+      def __call_rpc__(_http_path, :options, stream) do
+        {:ok, stream}
+      end
+
       def __call_rpc__(_http_path, _http_method, stream) do
         raise GRPC.RPCError, status: :unimplemented
       end
