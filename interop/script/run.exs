@@ -1,4 +1,8 @@
-{options, _, _} = OptionParser.parse(System.argv(), strict: [rounds: :integer, concurrency: :integer, port: :integer, level: :string])
+{options, _, _} =
+  OptionParser.parse(System.argv(),
+    strict: [rounds: :integer, concurrency: :integer, port: :integer, level: :string]
+  )
+
 rounds = Keyword.get(options, :rounds) || 20
 max_concurrency = System.schedulers_online()
 concurrency = Keyword.get(options, :concurrency) || max_concurrency
@@ -21,9 +25,9 @@ alias Interop.Client
 defmodule InteropTestRunner do
   def run(_cli, adapter, port, rounds) do
     opts = [interceptors: [GRPC.Client.Interceptors.Logger], adapter: adapter]
-    ch = Client.connect("127.0.0.1", port, opts)
+    ch = Client.connect("127.0.0.1:#{port}", opts)
 
-    for _ <- 1..rounds do
+    for round <- 1..rounds do
       Client.empty_unary!(ch)
       Client.cacheable_unary!(ch)
       Client.large_unary!(ch)
@@ -42,15 +46,30 @@ defmodule InteropTestRunner do
       Client.cancel_after_begin!(ch)
       Client.cancel_after_first_response!(ch)
       Client.timeout_on_sleeping_server!(ch)
+
+      IO.inspect(round, label: "Round #{round} --------------------------------")
     end
+
     :ok
   end
 end
+
+res = DynamicSupervisor.start_link(strategy: :one_for_one, name: GRPC.Client.Supervisor)
+
+{:ok, _pid} =
+  case res do
+    {:ok, pid} ->
+      {:ok, pid}
+
+    {:error, {:already_started, pid}} ->
+      {:ok, pid}
+  end
 
 for adapter <- [Gun, Mint] do
   Logger.info("Starting run for adapter: #{adapter}")
   args = [adapter, port, rounds]
   stream_opts = [max_concurrency: concurrency, ordered: false, timeout: :infinity]
+
   1..concurrency
   |> Task.async_stream(InteropTestRunner, :run, args, stream_opts)
   |> Enum.to_list()
